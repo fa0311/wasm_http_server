@@ -28,8 +28,15 @@ fn handle_client(mut stream: TcpStream) -> std::io::Result<()> {
         RequestDecoder::<httpcodec::BodyDecoder<bytecodec::bytes::Utf8Decoder>>::default();
 
     let req = match decoder.decode_from_bytes(data.as_slice()) {
-        Ok(req) => handle_http(req),
-        Err(e) => Err(e),
+        Ok(req) => {
+            println!("Response Header: {:?}", req.header().to_string());
+            println!("Response Body: {:?}", req.body().to_string());
+            handle_http(req)
+        }
+        Err(e) => {
+            println!("Error: {:?}", e);
+            Err(e)
+        }
     };
 
     let r = match req {
